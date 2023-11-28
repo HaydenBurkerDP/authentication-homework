@@ -25,6 +25,11 @@ def category_update_by_id(category_id):
     return controllers.category_update_by_id(request, category_id)
 
 
+@categories.route("/category/activity/<category_id>", methods=["PATCH"])
+def category_activity(category_id):
+    return controllers.category_activity(request, category_id)
+
+
 @categories.route("/category/delete/<category_id>", methods=["DELETE"])
 def category_delete_by_id(category_id):
     return controllers.category_delete_by_id(request, category_id)

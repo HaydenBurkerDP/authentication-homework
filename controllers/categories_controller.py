@@ -65,6 +65,28 @@ def category_update_by_id(req, category_id, auth_info):
 
 
 @authenticate_return_auth
+def category_activity(req, category_id, auth_info):
+    if auth_info.user.role != "admin":
+        return jsonify({"message": "must be an administrator to complete this action"}), 403
+
+    if not validate_uuid4(category_id):
+        return jsonify({"message": "invalid category id"}), 400
+
+    category_query = db.session.query(Categories).filter(Categories.category_id == category_id).first()
+
+    if not category_query:
+        return jsonify({"message": "category not found"}), 404
+
+    category_query.active = not category_query.active
+    db.session.commit()
+
+    if category_query.active:
+        return jsonify({"message": "category activated", "category": category_schema.dump(category_query)}), 200
+    else:
+        return jsonify({"message": "category deactivated", "category": category_schema.dump(category_query)}), 200
+
+
+@authenticate_return_auth
 def category_delete_by_id(req, category_id, auth_info):
     if auth_info.user.role != "admin":
         return jsonify({"message": "must be an administrator to complete this action"}), 403
